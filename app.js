@@ -1,7 +1,7 @@
 let grid = document.getElementById('grid');
 let keyBoard = document.getElementById("keyBoard");
 keyBoard.className = 'keyboard';
-let worldLists = [ 'table','chair','china','piano','paint'];
+let worldLists = ['table', 'chair', 'china', 'piano', 'paint','light'];
 let attempts = [];
 let currentAttempt = '';
 let randomIndex = Math.floor(Math.random() * worldLists.length);
@@ -58,26 +58,35 @@ function getBgColor(attempt,i) {
     return YELLOW;
 }
 function handleKeyDown(e) {
-    let letter = e.key.toLowerCase();
     if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
         return;
     }
     handleKey(e.key)
 }
 function handleKey(key) {
-     let letter = key.toLowerCase();
-     if (letter === "enter") {
+    let letter = key.toLowerCase();
+    if (attempts.length > 6) {
+        return;
+    }
+    
+    
+    if (letter === "enter") {
        if (currentAttempt.length < 5) {
          return;
        }
        attempts.push(currentAttempt);
          currentAttempt = "";
-         uptadeKeyBoard()
+        uptadeKeyBoard();
+        saveGame();
+
      } else if (letter === "backspace") {
        currentAttempt = currentAttempt.slice(0, currentAttempt.length - 1);
      } else if (/[a-z]/.test(letter)) {
        currentAttempt = currentAttempt + letter;
-     }
+    }
+    if (attempts.length === 6 && currentAttempt !== secretWord) {
+        alert(secretWord);
+    }
      uptadeGrid();
 }
 document.addEventListener('keydown', handleKeyDown);
@@ -146,4 +155,30 @@ function uptadeKeyBoard() {
         button.style.backgroundColor = bestColors.get(key)
     }
 
+}
+
+loadGame()
+function loadGame() {
+    let data;
+    try {
+        data = JSON.parse(localStorage.getItem("data"));
+    } catch (error) { }
+    
+    if (data != null) {
+    console.log(attempts === data.attempts);
+        // if (data.attempts === attempts) {
+          console.log(attempts === data.attempts);
+            attempts = data.attempts;
+            console.log(attempts)
+        // }
+    }
+}
+
+function saveGame() {
+    let data = JSON.stringify({ secretWord, attempts });
+    try {
+        localStorage.setItem('data', data);
+    } catch (error) {
+        
+    }
 }
