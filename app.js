@@ -9,7 +9,8 @@ let secretWord = worldLists[randomIndex];
 let GREY = "#212121";
 let GREEN = "#538d4e";
 let YELLOW = "#b59f3b";
-let LIGHTGREY = "#888" 
+let LIGHTGREY = "#888";
+let keyboardButtons = new Map();
 function drawGrid() {
     for (let i = 0; i < 6; i++) {
         let row = document.createElement('div');
@@ -58,27 +59,27 @@ function getBgColor(attempt,i) {
 }
 function handleKeyDown(e) {
     let letter = e.key.toLowerCase();
-    if (e.ctrlKey || e.metaKey || e.altKey) {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
         return;
     }
-    if (letter === 'enter') {
-        if (currentAttempt.length < 5) {
-            return;
-        }
-        // if (!secretWord.includes(letter)) {
-        //     alert('Таны оруулсан үсэг таах үгэнд алга байна')
-        //     return
-        // }
-        attempts.push(currentAttempt);
-        currentAttempt = "";
-    } else if (letter === 'backspace') {
-            currentAttempt = currentAttempt.slice(0,currentAttempt.length-1);
-    } else if (/[a-z]/.test(letter)) {
-        currentAttempt = currentAttempt + letter;
-    }
-    uptadeGrid()
+    handleKey(e.key)
 }
-
+function handleKey(key) {
+     let letter = key.toLowerCase();
+     if (letter === "enter") {
+       if (currentAttempt.length < 5) {
+         return;
+       }
+       attempts.push(currentAttempt);
+         currentAttempt = "";
+         uptadeKeyBoard()
+     } else if (letter === "backspace") {
+       currentAttempt = currentAttempt.slice(0, currentAttempt.length - 1);
+     } else if (/[a-z]/.test(letter)) {
+       currentAttempt = currentAttempt + letter;
+     }
+     uptadeGrid();
+}
 document.addEventListener('keydown', handleKeyDown);
 
 function buildKeyboard() {
@@ -93,7 +94,10 @@ function buildKeyboardRow(letters,isLastRow) {
      let button = document.createElement("button");
      button.className = "KeyForKeyBoard";
      button.innerText = 'Enter';
-     button.style.background = LIGHTGREY;
+        button.style.background = LIGHTGREY;
+        button.onclick = () => {
+            handleKey('enter');
+        }
      row.appendChild(button);
     }
     for (let letter of letters) {
@@ -101,6 +105,10 @@ function buildKeyboardRow(letters,isLastRow) {
         button.className = "KeyForKeyBoard";
         button.innerText = letter;
         button.style.background = LIGHTGREY;
+        button.onclick = () => {
+          handleKey(letter);
+        };
+        keyboardButtons.set(letter,button)
         row.appendChild(button);
     }
     if (isLastRow) {
@@ -108,7 +116,34 @@ function buildKeyboardRow(letters,isLastRow) {
         button.className = "KeyForKeyBoard";
         button.innerText = "<=";
         button.style.background = LIGHTGREY;
+        button.onclick = () => {
+          handleKey('backspace');
+        };
         row.appendChild(button);
     }
     keyBoard.appendChild(row);
+}
+uptadeKeyBoard();
+function getBetterColor (a, b) {
+    if (a === GREEN || b === GREEN) {
+        return GREEN;
+    }
+    if (a === YELLOW || b=== YELLOW) {
+        return YELLOW;
+    }
+}
+function uptadeKeyBoard() {
+    let bestColors = new Map();
+    for (let attempt of attempts) {
+        for (let i = 0; i < attempt.length; i++){
+            let color = getBgColor(attempt, i);
+            let key = attempt[i];
+            let bestColor = bestColors.get(key);
+            bestColors.set(key,getBetterColor(color,bestColor))
+        }
+    }
+    for (let [key, button] of keyboardButtons) {
+        button.style.backgroundColor = bestColors.get(key)
+    }
+
 }
