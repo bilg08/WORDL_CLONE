@@ -10,6 +10,7 @@ let GREY = "#212121";
 let GREEN = "#538d4e";
 let YELLOW = "#b59f3b";
 let LIGHTGREY = "#888";
+let BLACK = '#000'
 let keyboardButtons = new Map();
 function drawGrid() {
     for (let i = 0; i < 6; i++) {
@@ -37,14 +38,21 @@ function drawPastAttempt(attempt, row) {
     for (let i = 0; i < 5; i++) {
         let cell = row.children[i];
         cell.innerText = attempt[i] ?? '';
-        cell.style.backgroundColor = getBgColor(attempt,i);
+        cell.style.backgroundColor = getBgColor(attempt,i)
+        cell.style.borderColor = getBgColor(attempt,i);
     }
 }
 function drawCurrentAttempt(row, attempt) {
   for (let i = 0; i < 5; i++) {
-    let cell = row.children[i];
-    cell.innerText = attempt[i] ?? "";
-  }
+      let cell = row.children[i];
+      cell.innerText = attempt[i] ?? "";
+      cell.style.backgroundColor = BLACK;
+      if (attempt[i] !== undefined) {
+          cell.style.borderColor = LIGHTGREY;
+      } else {
+        cell.style.borderColor = GREY;
+      }
+    }
 }
 
 function getBgColor(attempt,i) {
@@ -64,28 +72,33 @@ function handleKeyDown(e) {
     handleKey(e.key)
 }
 function handleKey(key) {
+    if (history.length === 6) {
+      return;
+    }
+    
     let letter = key.toLowerCase();
-    if (attempts.length > 6) {
-        return;
-    }
-    
-    
     if (letter === "enter") {
-       if (currentAttempt.length < 5) {
-         return;
-       }
-       attempts.push(currentAttempt);
-         currentAttempt = "";
-        uptadeKeyBoard();
-        saveGame();
+      if (currentAttempt.length < 5) {
+        return;
+      }
 
-     } else if (letter === "backspace") {
-       currentAttempt = currentAttempt.slice(0, currentAttempt.length - 1);
-     } else if (/[a-z]/.test(letter)) {
-       currentAttempt = currentAttempt + letter;
-    }
-    if (attempts.length === 6 && currentAttempt !== secretWord) {
-        alert(secretWord);
+      if (history.length === 5 && currentAttempt !== secret) {
+        alert(secret);
+      }
+      attempts.push(currentAttempt);
+      currentAttempt = "";
+      uptadeKeyBoard();
+      saveGame();
+    } else if (letter === "backspace") {
+      currentAttempt = currentAttempt.slice(0, currentAttempt.length - 1);
+    } else if (/^[a-z]$/.test(letter)) {
+      if (currentAttempt.length < 5) {
+        currentAttempt += letter;
+          animatePress(currentAttempt.length - 1);
+          setTimeout(() => {
+              clearAnimation(currentAttempt.length - 1);
+          },100)
+      }
     }
      uptadeGrid();
 }
@@ -157,7 +170,27 @@ function uptadeKeyBoard() {
 
 }
 
-loadGame()
+loadGame();
+
+function animatePress(index) {
+    let rowIndex = attempts.length;
+    let row = grid.children[rowIndex];
+    let cell = row.children[index];
+    cell.style.animationName = 'press';
+    cell.style.animationDuration = '0.2s';
+    cell.style.animationTimingFunction = 'ease-out';
+}
+
+function clearAnimation(index) {
+  let rowIndex = attempts.length;
+  let row = grid.children[rowIndex];
+  let cell = row.children[index];
+  cell.style.animationName = "";
+    cell.style.animationDuration = "";
+    cell.style.animationTimingFunction = "ease-out";
+    
+}
+
 function loadGame() {
     let data;
     try {
