@@ -35,24 +35,45 @@
         gap:8px;
     }
     .cell{
-        /* width:80px;
-        height:80px;
-        border:1px solid #aaa;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 40px;
-        margin-top: 5px;
-        font-weight: bold; */
         width: 60px;
         height: 60px;
         line-height: 60px;
         border:1px solid #444;
         display: inline-block;
-        margin: 4px;
-        padding: 6px;
         font-size: 40px;
         font-weight: bold;
+        position: relative;
+        margin:4px;
+        perspective: 1000px;
+    }
+    
+     .cell .surface > div{
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 1s linear;
+    } 
+    .cell .front{
+        opacity:0 ;
+    }
+    .cell .back{
+      opacity:1;
+    }
+    .cell.back{
+      opacity:0 ;
+    }
+    .cell   .front{
+      opacity:1;
+    } 
+     .cell.front, .cell.back{
+      position: absolute;
+      
     }
     .keyboard{
         flex: none;

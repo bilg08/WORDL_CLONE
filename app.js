@@ -19,6 +19,16 @@ function drawGrid() {
             for (let j = 0; j < 5; j++) {
                 let cell = document.createElement('div');
                 cell.className = 'cell';
+                cell.textContent = '';
+                let front = document.createElement('div');
+                front.className = "front";
+                let back = document.createElement("div");
+                back.className = "back";
+                let surface = document.createElement("div");
+                surface.className = 'surface';
+                surface.appendChild(front);
+                surface.appendChild(back);
+                cell.appendChild(surface);
                 row.appendChild(cell);
             }
         grid.appendChild(row);
@@ -27,32 +37,47 @@ function drawGrid() {
 drawGrid();
 uptadeGrid();
 function uptadeGrid() {
-    let row = grid.firstChild;
-    for (let attempt of attempts) {
-        drawPastAttempt(attempt, row);
-        row = row.nextSibling;
-    }
-    drawCurrentAttempt(row, currentAttempt);
-}
-function drawPastAttempt(attempt, row) {
-    for (let i = 0; i < 5; i++) {
-        let cell = row.children[i];
-        cell.innerText = attempt[i] ?? '';
-        cell.style.backgroundColor = getBgColor(attempt,i)
-        cell.style.borderColor = getBgColor(attempt,i);
+ 
+    for (let i = 0; i < 6; i++) {
+        let row = grid.children[i];
+        if (i < attempts.length) {
+            drawAttempt(row,attempts[i],true)
+        } else if (i === attempts.length) {
+            drawAttempt(row, currentAttempt, false);
+        } else {
+            drawAttempt(row, "", false);          
+        }
     }
 }
-function drawCurrentAttempt(row, attempt) {
+function drawAttempt(row, attempt, isCurrent) {
   for (let i = 0; i < 5; i++) {
-      let cell = row.children[i];
-      cell.innerText = attempt[i] ?? "";
-      cell.style.backgroundColor = BLACK;
-      if (attempt[i] !== undefined) {
-          cell.style.borderColor = LIGHTGREY;
-      } else {
-        cell.style.borderColor = GREY;
-      }
+    let cell = row.children[i];
+    let surface = cell.firstChild;
+    let front = surface.children[0];
+    let back = surface.children[1];
+    if (attempt[i] !== undefined) {
+      front.textContent = attempt[i];
+      back.textContent = attempt[i];
+    } else {
+      front.innerHTML = '<div style = "opacity: 0">X</div>';
+      back.innerHTML = '<div style = "opacity: 0">X</div>';
+      clearAnimation(cell);
     }
+    front.style.backgroundColor = BLACK;
+    front.style.borderColor = "";
+    if (attempt[i] !== undefined) {
+      front.style.borderColor = LIGHTGREY;
+    }
+
+    back.style.backgroundColor = getBgColor(attempt, i);
+    back.style.borderColor = getBgColor(attempt, i);
+
+    if (isCurrent) {
+      cell.classList.add("solved");
+    } else {
+      cell.classList.remove("solved");
+    }
+  }
 }
 
 function getBgColor(attempt,i) {
@@ -95,9 +120,6 @@ function handleKey(key) {
       if (currentAttempt.length < 5) {
         currentAttempt += letter;
           animatePress(currentAttempt.length - 1);
-          setTimeout(() => {
-              clearAnimation(currentAttempt.length - 1);
-          },100)
       }
     }
      uptadeGrid();
@@ -181,10 +203,7 @@ function animatePress(index) {
     cell.style.animationTimingFunction = 'ease-out';
 }
 
-function clearAnimation(index) {
-  let rowIndex = attempts.length;
-  let row = grid.children[rowIndex];
-  let cell = row.children[index];
+function clearAnimation(cell) {
   cell.style.animationName = "";
     cell.style.animationDuration = "";
     cell.style.animationTimingFunction = "ease-out";
