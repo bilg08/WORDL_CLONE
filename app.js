@@ -217,12 +217,8 @@ function loadGame() {
     } catch (error) { }
     
     if (data != null) {
-    console.log(attempts === data.attempts);
-        // if (data.attempts === attempts) {
-          console.log(attempts === data.attempts);
             attempts = data.attempts;
             console.log(attempts)
-        // }
     }
 }
 
