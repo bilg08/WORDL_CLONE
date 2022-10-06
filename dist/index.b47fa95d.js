@@ -27772,7 +27772,8 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
-var _s = $RefreshSig$();
+var _context = require("./context");
+var _s = $RefreshSig$(), _s1 = $RefreshSig$(), _s2 = $RefreshSig$();
 let GREY = "#212121";
 let GREEN = "#538d4e";
 let YELLOW = "#b59f3b";
@@ -27782,6 +27783,20 @@ function Wordle() {
     _s();
     let [history1, setHistory] = (0, _react.useState)([]);
     let [currentAttempt, setCurrentAttempt] = (0, _react.useState)("");
+    let loadedRef = (0, _react.useRef)(false);
+    (0, _react.useEffect)(()=>{
+        if (loadedRef.current) return;
+        loadedRef.current = true;
+        let savedHistory = loadHistory();
+        if (savedHistory) setHistory(savedHistory);
+    }, [
+        history1
+    ]);
+    (0, _react.useEffect)(()=>{
+        saveHistory(history1);
+    }, [
+        history1
+    ]);
     function handleKeyDown(e) {
         if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
         handleKey(e.key);
@@ -27792,11 +27807,13 @@ function Wordle() {
         if (letter === "enter") {
             if (currentAttempt.length < 5) return;
             if (history1.length === 5 && currentAttempt !== secretWord) alert(secretWord);
-            setHistory([
+            let newHistory = [
                 ...history1,
                 currentAttempt
-            ]);
+            ];
+            setHistory(newHistory);
             setCurrentAttempt("");
+            saveHistory(newHistory);
         } else if (letter === "backspace") setCurrentAttempt(currentAttempt.slice(0, currentAttempt.length - 1));
         else if (/^[a-z]$/.test(letter)) {
             if (currentAttempt.length < 5) {
@@ -27810,48 +27827,54 @@ function Wordle() {
         window.addEventListener("keydown", handleKeyDown);
         return ()=>window.removeEventListener("keydown", handleKeyDown);
     });
-    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-        children: [
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h1", {
-                children: "Wordle"
-            }, void 0, false, {
-                fileName: "wordle.js",
-                lineNumber: 50,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Grid, {
-                history: history1,
-                currentAttempt: currentAttempt
-            }, void 0, false, {
-                fileName: "wordle.js",
-                lineNumber: 51,
-                columnNumber: 11
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Keyboard, {
-                onKey: handleKey
-            }, void 0, false, {
-                fileName: "wordle.js",
-                lineNumber: 52,
-                columnNumber: 11
-            }, this)
-        ]
-    }, void 0, true, {
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _context.KeyContext).Provider, {
+        value: handleKey,
+        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            id: "screen",
+            children: [
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h1", {
+                    children: "Wordle"
+                }, void 0, false, {
+                    fileName: "wordle.js",
+                    lineNumber: 69,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Grid, {
+                    history: history1,
+                    currentAttempt: currentAttempt
+                }, void 0, false, {
+                    fileName: "wordle.js",
+                    lineNumber: 70,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Keyboard, {
+                    onKey: handleKey
+                }, void 0, false, {
+                    fileName: "wordle.js",
+                    lineNumber: 71,
+                    columnNumber: 9
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "wordle.js",
+            lineNumber: 68,
+            columnNumber: 7
+        }, this)
+    }, void 0, false, {
         fileName: "wordle.js",
-        lineNumber: 49,
+        lineNumber: 67,
         columnNumber: 5
     }, this);
 }
 exports.default = Wordle;
-_s(Wordle, "yQqPHp0JGyaXNhURwmRESoyUDEc=");
+_s(Wordle, "Dk/SGWpgSVMM9vhCZHFW5JdXEHk=");
 _c = Wordle;
 let wordlist = [
     "table,",
     "chair"
 ];
-// let history = ["chair"];
 let randomIndex = Math.floor(Math.random() * history.length);
 let secret = wordlist[randomIndex];
-// let currentAttempt = "table";
 function Grid({ history: history1 , currentAttempt  }) {
     let rows = [];
     for(let i = 0; i < 6; i++){
@@ -27860,7 +27883,7 @@ function Grid({ history: history1 , currentAttempt  }) {
             solved: true
         }, i, false, {
             fileName: "wordle.js",
-            lineNumber: 68,
+            lineNumber: 86,
             columnNumber: 17
         }, this));
         else if (i === history1.length) rows.push(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Attempt, {
@@ -27868,7 +27891,7 @@ function Grid({ history: history1 , currentAttempt  }) {
             solved: false
         }, i, false, {
             fileName: "wordle.js",
-            lineNumber: 70,
+            lineNumber: 88,
             columnNumber: 17
         }, this));
         else rows.push(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Attempt, {
@@ -27876,7 +27899,7 @@ function Grid({ history: history1 , currentAttempt  }) {
             solved: false
         }, i, false, {
             fileName: "wordle.js",
-            lineNumber: 72,
+            lineNumber: 90,
             columnNumber: 17
         }, this));
     }
@@ -27885,7 +27908,7 @@ function Grid({ history: history1 , currentAttempt  }) {
         children: rows
     }, void 0, false, {
         fileName: "wordle.js",
-        lineNumber: 75,
+        lineNumber: 93,
         columnNumber: 10
     }, this);
 }
@@ -27898,19 +27921,20 @@ function Attempt({ attempt , solved  }) {
         solved: solved
     }, i, false, {
         fileName: "wordle.js",
-        lineNumber: 81,
+        lineNumber: 99,
         columnNumber: 16
     }, this));
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
         children: cells
     }, void 0, false, {
         fileName: "wordle.js",
-        lineNumber: 83,
+        lineNumber: 101,
         columnNumber: 10
     }, this);
 }
 _c2 = Attempt;
 function Cell({ index , attempt , solved  }) {
+    _s1();
     let content;
     let hasLetter = attempt[index] !== undefined;
     let color = getBgColor(attempt, index);
@@ -27922,10 +27946,22 @@ function Cell({ index , attempt , solved  }) {
         children: "X"
     }, void 0, false, {
         fileName: "wordle.js",
-        lineNumber: 92,
+        lineNumber: 110,
         columnNumber: 19
     }, this);
+    let cellRef = (0, _react.useRef)(null);
+    let prevHasLetter = (0, _react.useRef)(hasLetter);
+    (0, _react.useEffect)(()=>{
+        // if (prevHasLetter.current === hasLetter) {
+        //   return;
+        // }
+        // prevHasLetter.current = hasLetter;
+        let cell = cellRef.current;
+        if (hasLetter) animatePress(cell);
+        else clearAnimation(cell);
+    });
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+        ref: cellRef,
         className: "cell " + (solved ? "solved" : ""),
         children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
             className: "surface",
@@ -27942,7 +27978,7 @@ function Cell({ index , attempt , solved  }) {
                     children: content
                 }, void 0, false, {
                     fileName: "wordle.js",
-                    lineNumber: 99,
+                    lineNumber: 133,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27954,21 +27990,22 @@ function Cell({ index , attempt , solved  }) {
                     children: content
                 }, void 0, false, {
                     fileName: "wordle.js",
-                    lineNumber: 107,
+                    lineNumber: 141,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "wordle.js",
-            lineNumber: 96,
+            lineNumber: 130,
             columnNumber: 13
         }, this)
     }, index, false, {
         fileName: "wordle.js",
-        lineNumber: 95,
-        columnNumber: 9
+        lineNumber: 127,
+        columnNumber: 7
     }, this);
 }
+_s1(Cell, "FcKt66ehLhtAZnMpwj81PvJ32rQ=");
 _c3 = Cell;
 function getBgColor(attempt, i) {
     let correctLetter = secret[i];
@@ -27977,85 +28014,81 @@ function getBgColor(attempt, i) {
     if (correctLetter === attemptLetter) return GREEN;
     return YELLOW;
 }
-function Keyboard({ onKey  }) {
+function Keyboard() {
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
         id: "keyboard",
         children: [
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(BuildKeyboardRow, {
-                onKey: onKey,
                 letters: "qwertyuiop",
                 isLast: false
             }, void 0, false, {
                 fileName: "wordle.js",
-                lineNumber: 133,
+                lineNumber: 167,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(BuildKeyboardRow, {
-                onKey: onKey,
                 letters: "asdfghjkl",
                 isLast: false
             }, void 0, false, {
                 fileName: "wordle.js",
-                lineNumber: 134,
+                lineNumber: 168,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(BuildKeyboardRow, {
-                onKey: onKey,
                 letters: "zxcvbnm",
                 isLast: true
             }, void 0, false, {
                 fileName: "wordle.js",
-                lineNumber: 135,
+                lineNumber: 169,
                 columnNumber: 7
             }, this),
             ";"
         ]
     }, void 0, true, {
         fileName: "wordle.js",
-        lineNumber: 132,
+        lineNumber: 166,
         columnNumber: 5
     }, this);
 }
 _c4 = Keyboard;
-function BuildKeyboardRow({ letters , onKey , isLast  }) {
+function BuildKeyboardRow({ letters , isLast  }) {
     let buttons = [];
     if (isLast) buttons.push(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Button, {
-        onKey: onKey,
         buttonKey: "Enter",
         children: "Enter"
     }, "enter", false, {
         fileName: "wordle.js",
-        lineNumber: 143,
+        lineNumber: 177,
         columnNumber: 7
     }, this));
     for (let letter of letters)buttons.push(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Button, {
-        onKey: onKey,
         buttonKey: letter,
         children: letter
     }, letter, false, {
         fileName: "wordle.js",
-        lineNumber: 150,
+        lineNumber: 184,
         columnNumber: 7
     }, this));
     if (isLast) buttons.push(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Button, {
-        onKey: onKey,
         buttonKey: "Backspace",
         children: "Backspace"
     }, "backspace", false, {
         fileName: "wordle.js",
-        lineNumber: 157,
+        lineNumber: 191,
         columnNumber: 7
     }, this));
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
         children: buttons
     }, void 0, false, {
         fileName: "wordle.js",
-        lineNumber: 162,
+        lineNumber: 196,
         columnNumber: 10
     }, this);
 }
 _c5 = BuildKeyboardRow;
-function Button({ buttonKey , children , onKey  }) {
+function Button({ buttonKey , children  }) {
+    _s2();
+    const onKey = (0, _react.useContext)((0, _context.KeyContext));
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
         style: {
             background: GREY
@@ -28068,11 +28101,38 @@ function Button({ buttonKey , children , onKey  }) {
         children: children
     }, void 0, false, {
         fileName: "wordle.js",
-        lineNumber: 166,
+        lineNumber: 201,
         columnNumber: 9
     }, this);
 }
+_s2(Button, "Zf7h8/crWqvYJxHPzTe6td3vML8=");
 _c6 = Button;
+function loadHistory() {
+    let data;
+    try {
+        data = JSON.parse(localStorage.getItem("data"));
+    } catch (error) {}
+    if (data != null) return data.history;
+}
+function saveHistory(history1) {
+    let data = JSON.stringify({
+        secret,
+        history: history1
+    });
+    try {
+        localStorage.setItem("data", data);
+    } catch (error) {}
+}
+function animatePress(cell) {
+    cell.style.animationName = "press";
+    cell.style.animationDuration = "0.2s";
+    cell.style.animationTimingFunction = "ease-out";
+}
+function clearAnimation(cell) {
+    cell.style.animationName = "";
+    cell.style.animationDuration = "";
+    cell.style.animationTimingFunction = "";
+}
 var _c, _c1, _c2, _c3, _c4, _c5, _c6;
 $RefreshReg$(_c, "Wordle");
 $RefreshReg$(_c1, "Grid");
@@ -28087,7 +28147,7 @@ $RefreshReg$(_c6, "Button");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","react":"21dqq"}],"gkKU3":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./context":"eidEW"}],"gkKU3":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -28237,6 +28297,24 @@ function registerExportsForReactRefresh(module1) {
     }
 }
 
-},{"react-refresh/runtime":"786KC"}]},["1xC6H","2gJQU","4ZG9e"], "4ZG9e", "parcelRequire1d18")
+},{"react-refresh/runtime":"786KC"}],"eidEW":[function(require,module,exports) {
+var $parcel$ReactRefreshHelpers$0ed5 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+$parcel$ReactRefreshHelpers$0ed5.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "KeyContext", ()=>KeyContext);
+var _react = require("react");
+const KeyContext = /*#__PURE__*/ (0, _react.createContext)(null);
+
+  $parcel$ReactRefreshHelpers$0ed5.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+},{"react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}]},["1xC6H","2gJQU","4ZG9e"], "4ZG9e", "parcelRequire1d18")
 
 //# sourceMappingURL=index.b47fa95d.js.map
