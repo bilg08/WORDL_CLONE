@@ -1,0 +1,28 @@
+{
+  "name": "wordl_clone",
+  "version": "1.0.0",
+  "description": "<img src=\"https://www.reviewgeek.com/p/uploads/2022/01/17d48f9d.png?height=200p&trim=2,2,2,2&crop=16:9\"\r      alt=\"Markdown Monster icon\"\r      style=\"float: left; margin-right: 10px;\" />",
+  "main": "app.js",
+  "dependencies": {
+    "parcel": "^2.7.0",
+    "react": "^18.3.0-next-65b3449c8-20221005",
+    "react-dom": "^18.3.0-next-65b3449c8-20221005"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bilg08/WORDL_CLONE.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bilg08/WORDL_CLONE/issues"
+  },
+  "homepage": "https://github.com/bilg08/WORDL_CLONE#readme",
+  "devDependencies": {
+    "process": "^0.11.10"
+  }
+}

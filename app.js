@@ -1,3 +1,6 @@
+import  React from 'react';
+
+
 let grid = document.getElementById("grid");
 let keyBoard = document.getElementById("keyBoard");
 keyBoard.className = "keyboard";

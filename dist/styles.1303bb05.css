@@ -1,0 +1,107 @@
+body, html {
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+  background: #111;
+  font-family: sans-serif;
+}
+
+body, html, #screen {
+  height: 100vh;
+  width: 100%;
+}
+
+#screen {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.grid {
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  display: flex;
+}
+
+.row {
+  gap: 8px;
+  display: flex;
+}
+
+.cell {
+  width: 60px;
+  height: 60px;
+  perspective: 1000px;
+  margin: 4px;
+  padding: 6px;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 60px;
+  display: inline-block;
+}
+
+.cell .front, .cell .back {
+  backface-visibility: hidden;
+  border: 2px solid #444;
+  position: absolute;
+  inset: 0;
+}
+
+.cell.solved .surface {
+  transform: rotateX(180deg);
+}
+
+.cell .surface {
+  transform-style: preserve-3d;
+  width: 100%;
+  height: 100%;
+  transition-duration: .8s;
+  position: relative;
+}
+
+.cell .front {
+  z-index: 2;
+}
+
+.cell .back {
+  z-index: 1;
+  transform: rotateX(180deg);
+}
+
+.keyboard {
+  flex: none;
+  padding: 20px;
+}
+
+.KeyForKeyBoard {
+  text-transform: uppercase;
+  height: 60px;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  margin: 3px;
+  padding: 15px;
+  font-size: 16px;
+}
+
+@keyframes press {
+  from {
+    opacity: .5;
+    transform: scale(.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/*# sourceMappingURL=styles.1303bb05.css.map */
