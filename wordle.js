@@ -1,68 +1,100 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect, useRef } from "react";
 let GREY = "#212121";
 let GREEN = "#538d4e";
 let YELLOW = "#b59f3b";
-let LIGHTGREY = "#888";
 let BLACK = "#000";
 export default function Wordle() {
-    let [history, setHistory] = useState([]);
-    let [currentAttempt, setCurrentAttempt] = useState("");
+  let [history, setHistory] = useState([]);
+  let [currentAttempt, setCurrentAttempt] = useState("");
+  let loadedRef = useRef(false);
+  let animatingRef = useRef(false);
+  let attempt = useRef();
 
-    function handleKeyDown(e) {
-      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
+  useEffect(() => {
+    if (loadedRef.current) {
+      return;
+    }
+    loadedRef.current = true;
+    let savedHistory = loadHistory();
+    if (savedHistory) {
+      setHistory(savedHistory);
+    }
+  });
+
+  function handleKeyDown(e) {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
+      return;
+    }
+
+    handleKey(e.key);
+  }
+  async function handleKey(key) {
+    if (history.length === 6) {
+      return;
+    }
+    if (animatingRef.current === true) {
+      return;
+    }
+    let letter = key.toLowerCase();
+    if (letter === "enter") {
+      if (currentAttempt.length < 5) {
         return;
       }
 
-      handleKey(e.key);
-    }
-    function handleKey(key) {
-      if (history.length === 6) {
-        return;
+      if (history.length === 5 && currentAttempt !== secret) {
+          alert(secret);
+          localStorage.clear();
+          location.reload();
       }
+      let newHistory = [...history, currentAttempt];
 
-      let letter = key.toLowerCase();
-      if (letter === "enter") {
-        if (currentAttempt.length < 5) {
-          return;
-        }
-
-        if (history.length === 5 && currentAttempt !== secretWord) {
-          alert(secretWord);
-        }
-        setHistory([...history, currentAttempt]);
-        setCurrentAttempt("");
-      } else if (letter === "backspace") {
-        setCurrentAttempt(currentAttempt.slice(0, currentAttempt.length - 1));
-      } else if (/^[a-z]$/.test(letter)) {
-        if (currentAttempt.length < 5) {
-          setCurrentAttempt(currentAttempt + letter);
-          currentAttempt += letter;
-          //  animatePress(currentAttempt.length - 1);
-        }
+      setHistory(newHistory);
+      saveHistory(newHistory);
+      setCurrentAttempt("");
+      waitForAnimation(currentAttempt);
+    } else if (letter === "backspace") {
+      setCurrentAttempt(currentAttempt.slice(0, currentAttempt.length - 1));
+    } else if (/^[a-z]$/.test(letter)) {
+      if (currentAttempt.length < 5) {
+        setCurrentAttempt(currentAttempt + letter);
+        currentAttempt += letter;
       }
     }
-    useEffect(() => {
-      window.addEventListener("keydown", handleKeyDown);
-      return () => window.removeEventListener("keydown", handleKeyDown);
-    });
+  }
+  function waitForAnimation(currentAttempt) {
+    attempt.current = currentAttempt;
+    if (animatingRef.current === true) {
+      throw Error("should never happen");
+    }
+    animatingRef.current = true;
+    setTimeout(() => {
+      animatingRef.current = false;
+      if (attempt.current === secret) {
+        alert("zov taalaa");
+        localStorage.clear();
+        location.reload();
+      }
+    }, 2000);
+  }
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
+
   return (
     <div>
       <h1>Wordle</h1>
-          <Grid history={history} currentAttempt={ currentAttempt} />
-          <Keyboard onKey={handleKey}/>
+      <Grid history={history} currentAttempt={currentAttempt} />
+      <Keyboard onKey={handleKey} />
     </div>
   );
 }
-let wordlist =["table,", "chair"];
-// let history = ["chair"];
+
+let wordlist = ["table,", "chair"];
 let randomIndex = Math.floor(Math.random() * history.length);
 let secret = wordlist[randomIndex];
-// let currentAttempt = "table";
-function Grid({history,currentAttempt }) {
-    
-
-
-    let rows = [];
+function Grid({ history, currentAttempt }) {
+  let rows = [];
   for (let i = 0; i < 6; i++) {
     if (i < history.length) {
       rows.push(<Attempt key={i} attempt={history[i]} solved={true} />);
@@ -83,19 +115,17 @@ function Attempt({ attempt, solved }) {
   return <div>{cells}</div>;
 }
 function Cell({ index, attempt, solved }) {
-    let content;
-    let hasLetter = attempt[index] !== undefined;
-    let color = getBgColor(attempt, index)
-    if (hasLetter) {
-        content = attempt[index];
-    } else {
-        content = <div style={{ opacity: 0 }}>X</div>;
-    }
-    return (
-        <div className={"cell " + (solved ? "solved" : '')} key={index}>
-            <div className="surface"
-             style={{transitionDelay :(index*300) + 'ms'}}
-            >
+  let content;
+  let hasLetter = attempt[index] !== undefined;
+  let color = getBgColor(attempt, index);
+  if (hasLetter) {
+    content = attempt[index];
+  } else {
+    content = <div style={{ opacity: 0 }}>X</div>;
+  }
+  return (
+    <div className={"cell " + (solved ? "solved" : "")} key={index}>
+      <div className="surface" style={{ transitionDelay: index * 300 + "ms" }}>
         <div
           className="front"
           style={{
@@ -107,8 +137,8 @@ function Cell({ index, attempt, solved }) {
         <div
           className="back"
           style={{
-              backgroundColor: color,
-              borderColor:color
+            backgroundColor: color,
+            borderColor: color,
           }}>
           {content}
         </div>
@@ -161,17 +191,35 @@ function BuildKeyboardRow({ letters, onKey, isLast }) {
   }
   return <div>{buttons}</div>;
 }
-function Button({ buttonKey,children,onKey}) {
-    return (
-        <button style={{
-            background:GREY
-        }} className="button"
-            onClick={() => {
-                onKey(buttonKey)
-            //TODO
-        }}
-        >
-            {children}
-      </button>
-  )
+function Button({ buttonKey, children, onKey }) {
+  return (
+    <button
+      style={{
+        background: GREY,
+      }}
+      className="button"
+      onClick={() => {
+        onKey(buttonKey);
+      }}>
+      {children}
+    </button>
+  );
+}
+
+function loadHistory() {
+  let data;
+  try {
+    data = JSON.parse(localStorage.getItem("data"));
+  } catch (error) {}
+
+  if (data != null) {
+    return data.history;
+  }
+}
+
+function saveHistory(history) {
+  let data = JSON.stringify({ secret, history });
+  try {
+    localStorage.setItem("data", data);
+  } catch (error) {}
 }
